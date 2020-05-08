@@ -2,7 +2,7 @@
 //  SceneDelegate.swift
 //  C19Stats
 //
-//  Created by Gene Backlin on 5/6/20.
+//  Created by Gene Backlin on 5/8/20.
 //  Copyright © 2020 Gene Backlin. All rights reserved.
 //
 

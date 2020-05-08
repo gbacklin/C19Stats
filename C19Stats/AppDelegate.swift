@@ -2,7 +2,7 @@
 //  AppDelegate.swift
 //  C19Stats
 //
-//  Created by Gene Backlin on 5/6/20.
+//  Created by Gene Backlin on 5/8/20.
 //  Copyright © 2020 Gene Backlin. All rights reserved.
 //
 
@@ -11,7 +11,10 @@ import UIKit
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-
+    var outputPath: String?
+    var outputFilename: String?
+    var outputCSVData: String?
+    var modelData: [JHUModel]?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.

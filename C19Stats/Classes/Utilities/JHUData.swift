@@ -20,28 +20,39 @@ enum DataType {
 
 class JHUData: NSObject {
     static var shared = JHUData()
+    
+    var selectedDataType: DataType?
+    var headerArray: [String] = [String]()
+    var lastColumn = 0
+    var reportingDate = ""
 
-    func fetchData(url: String, completion: @escaping (_ results: Any?,_ csv: String?, _ error: NSError?) -> Void) {
+    func fetchData(url: String, type: DataType, completion: @escaping (_ results: Any?,_ csv: String?,_ models: [JHUModel]?, _ error: NSError?) -> Void) {
         // Fetch data...
+        headerArray.removeAll()
+        lastColumn = 0
+        reportingDate = ""
         Network.shared.getCSV(url: url) { [weak self] (results, error) in
             if error != nil {
                 DispatchQueue.main.async {
-                    completion(nil, nil, error)
+                    completion(nil, nil, nil, error)
                 }
             } else {
                 if let rawData: String = results as? String {
-                    let parsedData = rawData.split(separator: "\n")
+                    let parsedData = rawData.split{$0 == "\n"}.map(String.init)
+                    let modelData: [JHUModel]? = self!.parseArray(csvArray: parsedData, type: type)
+
+                    //let parsedData = rawData.split(separator: "\n")
                     var dataArray: [String] = [String]()
                     for data in parsedData {
-                        dataArray.append(String(data))
+                        dataArray.append(data)
                     }
                     DispatchQueue.main.async {
-                        completion(dataArray, rawData, nil)
+                        completion(dataArray, rawData, modelData, nil)
                     }
                 } else {
                     let error: NSError = self!.createError(domain: NSURLErrorDomain, code: -1955, text: "The results from the query were nil") as NSError
                     DispatchQueue.main.async {
-                        completion(nil, nil, error)
+                        completion(nil, nil, nil, error)
                     }
                 }
             }
@@ -50,6 +61,113 @@ class JHUData: NSObject {
     
     // MARK: - Utility methods
     
+    func parseRecord(csv: String, type: DataType, delim: Character?) -> JHUModel? {
+        var result: JHUModel?
+        var csvArray: [String]?
+        
+        if delim != nil {
+            csvArray = csv.split{$0 == delim!}.map(String.init)
+        } else {
+            csvArray = csv.split{$0 == ","}.map(String.init)
+        }
+        switch type {
+        case .confirmus, .deathus:
+            if headerArray.count < 1 {
+                headerArray = csvArray!
+                lastColumn = headerArray.count-1
+                reportingDate = headerArray[lastColumn]
+            } else {
+                if let array = csvArray {
+                    let dataType = (type == .confirmus) ? "Confirmed US" : "Deaths US"
+                    let index = Int(array[USFormat.uid.rawValue])
+                    if  index! < 1000 {
+                        result = JHUModel(uid: array[USFormat.uid.rawValue],
+                                          iso2: array[USFormat.iso2.rawValue],
+                                          iso3: array[USFormat.iso3.rawValue],
+                                          code3: array[USFormat.code3.rawValue],
+                                          fips: array[USFormat.fips.rawValue],
+                                          county: "",
+                                          provinceState: array[USFormat.provinceState.rawValue-1],
+                                          countryRegion: array[USFormat.countryRegion.rawValue-1],
+                                          latitude: array[USFormat.latitude.rawValue-1],
+                                          longitude: array[USFormat.longitude.rawValue-1],
+                                          dateString: reportingDate,
+                                          latestTotal: array[lastColumn], resultType: dataType)
+                    } else {
+                        result = JHUModel(uid: array[USFormat.uid.rawValue],
+                                          iso2: array[USFormat.iso2.rawValue],
+                                          iso3: array[USFormat.iso3.rawValue],
+                                          code3: array[USFormat.code3.rawValue],
+                                          fips: array[USFormat.fips.rawValue],
+                                          county: array[USFormat.county.rawValue],
+                                          provinceState: array[USFormat.provinceState.rawValue],
+                                          countryRegion: array[USFormat.countryRegion.rawValue],
+                                          latitude: array[USFormat.latitude.rawValue],
+                                          longitude: array[USFormat.longitude.rawValue],
+                                          dateString: reportingDate,
+                                          latestTotal: array[lastColumn], resultType: dataType)
+                    }
+                }
+            }
+        case .confirmglobal, .deathglobal, .recoveredglobal:
+            if headerArray.count < 1 {
+                headerArray = csvArray!
+                lastColumn = headerArray.count-1
+                reportingDate = headerArray[lastColumn]
+            } else {
+                if let array = csvArray {
+                    var dataType = "Confirmed Global"
+                    if type == .deathglobal {
+                        dataType = "Death Global"
+                    } else if type == .recoveredglobal {
+                        dataType = "Recovered Global"
+                    }
+                    if array.count < headerArray.count {
+                        result = JHUModel(uid: "",
+                                          iso2: "",
+                                          iso3: "",
+                                          code3: "",
+                                          fips: "",
+                                          county: "",
+                                          provinceState: "",
+                                          countryRegion: array[GlobalFormat.countryRegion.rawValue-1],
+                                          latitude: array[GlobalFormat.latitude.rawValue-1],
+                                          longitude: array[GlobalFormat.longitude.rawValue-1],
+                                          dateString: reportingDate,
+                                          latestTotal: array[lastColumn-1], resultType: dataType)
+                    } else {
+                        result = JHUModel(uid: "",
+                                          iso2: "",
+                                          iso3: "",
+                                          code3: "",
+                                          fips: "",
+                                          county: "",
+                                          provinceState: array[GlobalFormat.provinceState.rawValue],
+                                          countryRegion: array[GlobalFormat.countryRegion.rawValue],
+                                          latitude: array[GlobalFormat.latitude.rawValue],
+                                          longitude: array[GlobalFormat.longitude.rawValue],
+                                          dateString: reportingDate,
+                                          latestTotal: array[lastColumn], resultType: dataType)
+                    }
+                }
+            }
+        }
+        return result
+    }
+    
+    func parseArray(csvArray: [String], type: DataType) -> [JHUModel]? {
+        var result: [JHUModel]?
+        for csv in csvArray {
+            if let rec = parseRecord(csv: csv, type: type, delim: ",") {
+                if result == nil {
+                    result = [JHUModel]()
+                }
+                result?.append(rec)
+            }
+        }
+        return result
+    }
+
     func convertDate(dateString: String) -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale(identifier: "en_US_POSIX") // set locale to reliable US_POSIX
@@ -72,7 +190,7 @@ class JHUData: NSObject {
         return NSError(domain: domain, code: code, userInfo: userInfo)
     }
 
-    func fetch(type: DataType, completion: @escaping (_ results: [String: [String]]?, _ csv: String?, _ error: NSError?) -> Void) {
+    func fetch(type: DataType, completion: @escaping (_ results: [String]?, _ csv: String?, _ models: [JHUModel]?, _ error: NSError?) -> Void) {
         let confirmUS = "time_series_covid19_confirmed_US.csv"
         let deathUS = "time_series_covid19_deaths_US.csv"
 
@@ -80,76 +198,107 @@ class JHUData: NSObject {
         let deathGlobal = "time_series_covid19_deaths_global.csv"
         let recoveredGlobal = "time_series_covid19_recovered_global.csv"
 
-        var confirm: [String] = [String]()
-        var death: [String] = [String]()
-        var recovered: [String] = [String]()
-        var resultData: [String: [String]] = [String: [String]]()
-
         switch type {
         case .confirmglobal:
-            fetchData(url: "\(JHU_URL)\(confirmGlobal)") { (confirmData, csv, error) in
+            fetchData(url: "\(JHU_URL)\(confirmGlobal)", type: type) { (data, csv, dataModels, error) in
                 if error != nil {
-                    completion(nil, nil, error)
+                    completion(nil, nil, nil, error)
                 } else {
-                    if confirmData != nil {
-                        confirm = confirmData as! [String]
-                        resultData["confirm"] = confirm
-                    }
-                    completion(resultData, csv, error)
+                    completion(data as? [String], csv, dataModels, error)
                 }
             }
 
         case .deathglobal:
-            fetchData(url: "\(JHU_URL)\(deathGlobal)") { (confirmData, csv, error) in
+            fetchData(url: "\(JHU_URL)\(deathGlobal)", type: type) { (data, csv, dataModels, error) in
                 if error != nil {
-                    completion(nil, nil, error)
+                    completion(nil, nil, nil, error)
                 } else {
-                    if confirmData != nil {
-                        death = confirmData as! [String]
-                        resultData["death"] = death
-                    }
-                    completion(resultData, csv, error)
+                    completion(data as? [String], csv, dataModels, error)
                 }
             }
 
         case .recoveredglobal:
-            fetchData(url: "\(JHU_URL)\(recoveredGlobal)") { (confirmData, csv, error) in
+            fetchData(url: "\(JHU_URL)\(recoveredGlobal)", type: type) { (data, csv, dataModels, error) in
                 if error != nil {
-                    completion(nil, nil, error)
+                    completion(nil, nil, nil, error)
                 } else {
-                    if confirmData != nil {
-                        recovered = confirmData as! [String]
-                        resultData["recovered"] = recovered
-                    }
-                    completion(resultData, csv, error)
+                    completion(data as? [String], csv, dataModels, error)
                 }
             }
 
         case .confirmus:
-            fetchData(url: "\(JHU_URL)\(confirmUS)") { (confirmData, csv, error) in
+            fetchData(url: "\(JHU_URL)\(confirmUS)", type: type) { (data, csv, dataModels, error) in
                 if error != nil {
-                    completion(nil, nil, error)
+                    completion(nil, nil,  nil, error)
                 } else {
-                    if confirmData != nil {
-                        confirm = confirmData as! [String]
-                        resultData["confirm"] = confirm
-                    }
-                    completion(resultData, csv, error)
+                    completion(data as? [String], csv, dataModels, error)
                 }
             }
 
         case .deathus:
-            fetchData(url: "\(JHU_URL)\(deathUS)") { (confirmData, csv, error) in
+            fetchData(url: "\(JHU_URL)\(deathUS)", type: type) { (data, csv, dataModels, error) in
                 if error != nil {
-                    completion(nil, nil, error)
+                    completion(nil, nil,  nil, error)
                 } else {
-                    if confirmData != nil {
-                        death = confirmData as! [String]
-                        resultData["death"] = death
-                    }
-                    completion(resultData, csv, error)
+                    completion(data as? [String], csv, dataModels, error)
                 }
             }
         }
     }
+    
+    func saveResults(dataType: DataType, completion: @escaping (_ path: String, _ filename: String, _ csv: String?, _ models: [JHUModel]?, _ error: NSError?, _ message: String?) -> Void) {
+        selectedDataType = dataType
+        JHUData.shared.fetch(type: dataType) { (results, csv, models, error) in
+            let documents: NSString = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
+            var filename: String = ""
+            
+            switch dataType {
+            case .confirmus:
+                filename = "C19ConfirmStatsUS.csv"
+            case .deathus:
+                filename = "C19DeathStatsUS.csv"
+            case .confirmglobal:
+                filename = "C19ConfirmStatsGlobal.csv"
+            case .deathglobal:
+                filename = "C19DeathStatusGlobal.csv"
+            case .recoveredglobal:
+                filename = "C19RecoveredStatsGlobal.csv"
+            }
+            // Perform Segue to Save or display results
+            //self.outputFilename = documents.appendingPathComponent(filename)
+            //self.outputCSVData = csv
+            //self.modelData = models
+            //(confirm as NSArray).write(toFile: self.outputFilename, atomically: true)
+            //self.saveFile(path: self.outputFilename, data: csv!)
+            let message = "There were \(results!.count) records retrieved."
+            completion(documents.appendingPathComponent(filename), filename, csv, models, error, message)
+        }
+    }
+    
+    func saveFile(path: String, data: String) {
+        if let doc = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            debugPrint(doc)
+            //writing
+            do {
+                try data.write(to: URL(fileURLWithPath: path), atomically: true, encoding: .utf8)
+            } catch {
+                debugPrint(error.localizedDescription)
+            }
+        }
+    }
+    
+    func readFile(path: String) -> String? {
+        var data: String?
+        if FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first != nil {
+            //reading
+            do {
+                data = try String(contentsOf: URL(fileURLWithPath: path), encoding: .utf8)
+            } catch {
+                debugPrint(error.localizedDescription)
+            }
+        }
+        return data
+    }
+
+
 }
