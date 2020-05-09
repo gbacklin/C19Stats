@@ -77,35 +77,35 @@ class JHUData: NSObject {
                 lastColumn = headerArray.count-1
                 reportingDate = headerArray[lastColumn]
             } else {
-                if let array = csvArray {
+                if let record = csvArray {
                     let dataType = (type == .confirmus) ? "Confirmed US" : "Deaths US"
-                    let index = Int(array[USFormat.uid.rawValue])
+                    let index = Int(record[USFormat.uid.rawValue])
                     if  index! < 1000 {
-                        result = JHUModel(uid: array[USFormat.uid.rawValue],
-                                          iso2: array[USFormat.iso2.rawValue],
-                                          iso3: array[USFormat.iso3.rawValue],
-                                          code3: array[USFormat.code3.rawValue],
-                                          fips: array[USFormat.fips.rawValue],
+                        result = JHUModel(uid: record[USFormat.uid.rawValue],
+                                          iso2: record[USFormat.iso2.rawValue],
+                                          iso3: record[USFormat.iso3.rawValue],
+                                          code3: record[USFormat.code3.rawValue],
+                                          fips: record[USFormat.fips.rawValue],
                                           county: "",
-                                          provinceState: array[USFormat.provinceState.rawValue-1],
-                                          countryRegion: array[USFormat.countryRegion.rawValue-1],
-                                          latitude: array[USFormat.latitude.rawValue-1],
-                                          longitude: array[USFormat.longitude.rawValue-1],
+                                          provinceState: record[USFormat.provinceState.rawValue-1],
+                                          countryRegion: record[USFormat.countryRegion.rawValue-1],
+                                          latitude: record[USFormat.latitude.rawValue-1],
+                                          longitude: record[USFormat.longitude.rawValue-1],
                                           dateString: reportingDate,
-                                          latestTotal: array[lastColumn], resultType: dataType)
+                                          latestTotal: record[record.count-1], resultType: dataType)
                     } else {
-                        result = JHUModel(uid: array[USFormat.uid.rawValue],
-                                          iso2: array[USFormat.iso2.rawValue],
-                                          iso3: array[USFormat.iso3.rawValue],
-                                          code3: array[USFormat.code3.rawValue],
-                                          fips: array[USFormat.fips.rawValue],
-                                          county: array[USFormat.county.rawValue],
-                                          provinceState: array[USFormat.provinceState.rawValue],
-                                          countryRegion: array[USFormat.countryRegion.rawValue],
-                                          latitude: array[USFormat.latitude.rawValue],
-                                          longitude: array[USFormat.longitude.rawValue],
+                        result = JHUModel(uid: record[USFormat.uid.rawValue],
+                                          iso2: record[USFormat.iso2.rawValue],
+                                          iso3: record[USFormat.iso3.rawValue],
+                                          code3: record[USFormat.code3.rawValue],
+                                          fips: record[USFormat.fips.rawValue],
+                                          county: record[USFormat.county.rawValue],
+                                          provinceState: record[USFormat.provinceState.rawValue],
+                                          countryRegion: record[USFormat.countryRegion.rawValue],
+                                          latitude: record[USFormat.latitude.rawValue],
+                                          longitude: record[USFormat.longitude.rawValue],
                                           dateString: reportingDate,
-                                          latestTotal: array[lastColumn], resultType: dataType)
+                                          latestTotal: record[record.count-1], resultType: dataType)
                     }
                 }
             }
@@ -115,14 +115,14 @@ class JHUData: NSObject {
                 lastColumn = headerArray.count-1
                 reportingDate = headerArray[lastColumn]
             } else {
-                if let array = csvArray {
+                if let record = csvArray {
                     var dataType = "Confirmed Global"
                     if type == .deathglobal {
                         dataType = "Death Global"
                     } else if type == .recoveredglobal {
                         dataType = "Recovered Global"
                     }
-                    if array.count < headerArray.count {
+                    if record.count < headerArray.count {
                         result = JHUModel(uid: "",
                                           iso2: "",
                                           iso3: "",
@@ -130,11 +130,11 @@ class JHUData: NSObject {
                                           fips: "",
                                           county: "",
                                           provinceState: "",
-                                          countryRegion: array[GlobalFormat.countryRegion.rawValue-1],
-                                          latitude: array[GlobalFormat.latitude.rawValue-1],
-                                          longitude: array[GlobalFormat.longitude.rawValue-1],
+                                          countryRegion: record[GlobalFormat.countryRegion.rawValue-1],
+                                          latitude: record[GlobalFormat.latitude.rawValue-1],
+                                          longitude: record[GlobalFormat.longitude.rawValue-1],
                                           dateString: reportingDate,
-                                          latestTotal: array[lastColumn-1], resultType: dataType)
+                                          latestTotal: record[record.count-1], resultType: dataType)
                     } else {
                         result = JHUModel(uid: "",
                                           iso2: "",
@@ -142,12 +142,12 @@ class JHUData: NSObject {
                                           code3: "",
                                           fips: "",
                                           county: "",
-                                          provinceState: array[GlobalFormat.provinceState.rawValue],
-                                          countryRegion: array[GlobalFormat.countryRegion.rawValue],
-                                          latitude: array[GlobalFormat.latitude.rawValue],
-                                          longitude: array[GlobalFormat.longitude.rawValue],
+                                          provinceState: record[GlobalFormat.provinceState.rawValue],
+                                          countryRegion: record[GlobalFormat.countryRegion.rawValue],
+                                          latitude: record[GlobalFormat.latitude.rawValue],
+                                          longitude: record[GlobalFormat.longitude.rawValue],
                                           dateString: reportingDate,
-                                          latestTotal: array[lastColumn], resultType: dataType)
+                                          latestTotal: record[record.count-1], resultType: dataType)
                     }
                 }
             }

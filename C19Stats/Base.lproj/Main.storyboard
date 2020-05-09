@@ -122,7 +122,7 @@
                                             <constraint firstAttribute="height" constant="24" id="Plk-Ag-rJv"/>
                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="fIp-Xz-0ym"/>
                                         </constraints>
-                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
@@ -133,7 +133,7 @@
                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="gdX-U2-HVh"/>
                                             <constraint firstAttribute="height" constant="24" id="wHk-wB-ASm"/>
                                         </constraints>
-                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>

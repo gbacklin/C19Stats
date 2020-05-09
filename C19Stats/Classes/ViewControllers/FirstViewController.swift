@@ -64,6 +64,16 @@ class FirstViewController: UIViewController {
         indexArray = initIndex()
         composeBarButtonItem.isEnabled = false
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super .viewWillAppear(animated)
+        self.navigationController?.navigationBar.topItem?.title = "C19 Statistics"
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super .viewWillDisappear(animated)
+        self.navigationController?.navigationBar.topItem?.title = ""
+    }
 
     @IBAction func fetchData(_ sender: Any) {
         composeBarButtonItem.isEnabled = false
@@ -138,8 +148,6 @@ class FirstViewController: UIViewController {
 }
 extension FirstViewController {
     func presentActionSheet() {
-        self.navigationController?.navigationBar.topItem?.title = "C19 Statistics"
-
         let controller = UIAlertController(title: "Category", message: "Select data sample", preferredStyle: .actionSheet)
         let usConfirmedAction = UIAlertAction(title: "US Confirmed", style: .default) {[unowned self] (action) in
             self.activityIndicator.startAnimating()
