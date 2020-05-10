@@ -38,12 +38,16 @@ class JHUData: NSObject {
                 }
             } else {
                 if let rawData: String = results as? String {
-                    let parsedData = rawData.split{$0 == "\n"}.map(String.init)
-                    let modelData: [JHUModel]? = self!.parseArray(csvArray: parsedData, type: type)
+                    var parsedData: [String]?
+                    parsedData = rawData.split{$0 == "\r\n"}.map(String.init)
+                    if parsedData!.count < 2 {
+                        parsedData = rawData.split{$0 == "\n"}.map(String.init)
+                    }
+                    let modelData: [JHUModel]? = self!.parseArray(csvArray: parsedData!, type: type)
 
                     //let parsedData = rawData.split(separator: "\n")
                     var dataArray: [String] = [String]()
-                    for data in parsedData {
+                    for data in parsedData! {
                         dataArray.append(data)
                     }
                     DispatchQueue.main.async {
