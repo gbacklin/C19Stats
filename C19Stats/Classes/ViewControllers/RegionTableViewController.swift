@@ -16,12 +16,19 @@ class RegionTableViewController: UITableViewController {
             return appDelegate.regionData
         }
         set {
+            appDelegate.regionData?.removeAll()
             appDelegate.regionData = newValue
         }
     }
 
-    var indexArray: [String]?
-    var namesDictionary: [String : [JHUModel]]?
+    var isNewDataSample: Bool {
+        get {
+            return appDelegate.isNewDataSample
+        }
+        set {
+            appDelegate.isNewDataSample = newValue
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,6 +37,11 @@ class RegionTableViewController: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super .viewWillAppear(animated)
         self.navigationItem.title = "C19 Regions"
+        if isNewDataSample {
+            tableView.scrollRectToVisible(CGRect(x: 0, y: 0, width: 1, height: 1), animated: true)
+            isNewDataSample = false
+        }
+        tableView.reloadData()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -40,11 +52,7 @@ class RegionTableViewController: UITableViewController {
     // MARK: - Table view data source
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        var count = 0
-        if let data = regionData {
-            count = Array(data.keys).count
-        }
-        return count
+        return 1
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

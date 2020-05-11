@@ -27,7 +27,6 @@ class ModelDetailViewController: UIViewController {
         if model != nil {
             var models = [JHUModel]()
             models.append(model!)
-            //self.navigationController?.navigationBar.topItem?.title = model?.provinceState
             if model!.county.count > 0 {
                 title = "\(String(describing: model!.provinceState)) (\(String(describing: model!.county)))"
             } else {
@@ -42,15 +41,23 @@ class ModelDetailViewController: UIViewController {
             addAnnotations(regions: models)
         } else {
             if regions != nil {
-                title = regions![0].provinceState
+                title = (regions![0].provinceState.count > 0) ? regions![0].provinceState : regions![0].countryRegion
                 dateLabel.text = regions![0].dateString
                 totalLabel.text = regions![0].resultType
 
-                let latitude: CLLocationDegrees = regions![0].latitude.toDouble()!
-                let longitude: CLLocationDegrees = regions![0].longitude.toDouble()!
-                let initialLocation = CLLocation(latitude: latitude, longitude: longitude)
-                mapView.centerToLocation(initialLocation, regionRadius: 300000)
-                addAnnotations(regions: regions!)
+                if regions![0].latitude.contains(".") && regions![0].longitude.contains(".") {
+                    let latitude: CLLocationDegrees = regions![0].latitude.toDouble()!
+                    let longitude: CLLocationDegrees = regions![0].longitude.toDouble()!
+                    let initialLocation = CLLocation(latitude: latitude, longitude: longitude)
+                    if regions!.count > 10 {
+                        mapView.centerToLocation(initialLocation, regionRadius: 800000)
+                    } else if regions!.count > 30 {
+                        mapView.centerToLocation(initialLocation, regionRadius: 1000000)
+                    } else {
+                        mapView.centerToLocation(initialLocation, regionRadius: 400000)
+                    }
+                    addAnnotations(regions: regions!)
+                }
             }
         }
     }
@@ -65,10 +72,12 @@ class ModelDetailViewController: UIViewController {
             annotation.coordinate = centerCoordinate
             if region.county.count > 0 {
                 annotation.title = region.county
-            } else {
+            } else if region.provinceState.count > 0 {
                 annotation.title = region.provinceState
+            }else {
+                annotation.title = region.countryRegion
             }
-            annotation.subtitle = "\(region.latestTotal)"
+            annotation.subtitle = "\(region.latestTotal) reported"
             mapView.addAnnotation(annotation)
         }
     }

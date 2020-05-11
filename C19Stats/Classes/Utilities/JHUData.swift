@@ -146,6 +146,9 @@ class JHUData: NSObject {
                                           dateString: reportingDate,
                                           latestTotal: record[record.count-1], resultType: dataType)
                     } else {
+                        if record[GlobalFormat.provinceState.rawValue].count < 1 {
+                            debugPrint(record)
+                        }
                         result = JHUModel(uid: "",
                                           iso2: "",
                                           iso3: "",
@@ -188,23 +191,23 @@ class JHUData: NSObject {
                 switch type {
                 case .confirmus, .deathus:
                     let key = rec.provinceState
-                    if var regions = result![key] {
-                        regions.append(rec)
-                        result![key] = regions
+                    if var localRegions = result![key] {
+                        localRegions.append(rec)
+                        result![key] = localRegions
                     } else {
-                        var regions: [JHUModel] = [JHUModel]()
-                        regions.append(rec)
-                        result![key] = regions
+                        var localRegions: [JHUModel] = [JHUModel]()
+                        localRegions.append(rec)
+                        result![key] = localRegions
                     }
                 case .confirmglobal, .deathglobal, .recoveredglobal:
                     let key = rec.countryRegion
-                    if var regions = result![key] {
-                        regions.append(rec)
-                        result![key] = regions
+                    if var localRegions = result![key] {
+                        localRegions.append(rec)
+                        result![key] = localRegions
                     } else {
-                        var regions: [JHUModel] = [JHUModel]()
-                        regions.append(rec)
-                        result![key] = regions
+                        var localRegions: [JHUModel] = [JHUModel]()
+                        localRegions.append(rec)
+                        result![key] = localRegions
                     }
                 }
             }

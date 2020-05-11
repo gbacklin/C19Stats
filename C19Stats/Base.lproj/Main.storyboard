@@ -160,70 +160,11 @@
                         <outlet property="dateLabel" destination="15o-Gi-vgK" id="TLR-fR-oDM"/>
                         <outlet property="mapView" destination="pgf-0Q-h8c" id="Mfq-Rn-Lhp"/>
                         <outlet property="totalLabel" destination="eyi-YD-tWU" id="o1m-9l-kcD"/>
-                        <segue destination="RyJ-Ux-Cwr" kind="popover" identifier="ShowAnnotationDetail" popoverAnchorView="pgf-0Q-h8c" id="Myf-YP-IQL">
-                            <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
-                        </segue>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cWg-sf-cTA" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3341" y="40"/>
-        </scene>
-        <!--Custom Annotation Callout View Controller-->
-        <scene sceneID="dzG-EC-MeX">
-            <objects>
-                <viewController storyboardIdentifier="CustomAnnotationCalloutViewController" id="RyJ-Ux-Cwr" customClass="CustomAnnotationCalloutViewController" customModule="C19Stats" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="4zh-h3-lim">
-                        <rect key="frame" x="0.0" y="0.0" width="150" height="100"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="177-Sd-8Dv">
-                                <rect key="frame" x="15" y="15" width="120" height="17"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="55X-TI-zMt">
-                                <rect key="frame" x="15" y="42" width="120" height="17"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Gkq-nM-PV9">
-                                <rect key="frame" x="15" y="69" width="120" height="17"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                        </subviews>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                        <constraints>
-                            <constraint firstItem="177-Sd-8Dv" firstAttribute="leading" secondItem="4zh-h3-lim" secondAttribute="leading" constant="15" id="0xN-EQ-z2P"/>
-                            <constraint firstItem="Gkq-nM-PV9" firstAttribute="top" secondItem="55X-TI-zMt" secondAttribute="bottom" constant="10" id="1Q6-7i-Ngp"/>
-                            <constraint firstAttribute="trailing" secondItem="177-Sd-8Dv" secondAttribute="trailing" constant="15" id="4My-gI-0Cr"/>
-                            <constraint firstItem="Gkq-nM-PV9" firstAttribute="leading" secondItem="4TV-aR-hSp" secondAttribute="leading" constant="15" id="8BW-D6-MDa"/>
-                            <constraint firstItem="4TV-aR-hSp" firstAttribute="trailing" secondItem="Gkq-nM-PV9" secondAttribute="trailing" constant="15" id="SQx-xd-CI8"/>
-                            <constraint firstItem="55X-TI-zMt" firstAttribute="top" secondItem="177-Sd-8Dv" secondAttribute="bottom" constant="10" id="XQX-8t-EOg"/>
-                            <constraint firstItem="4TV-aR-hSp" firstAttribute="trailing" secondItem="55X-TI-zMt" secondAttribute="trailing" constant="15" id="kuG-81-ljn"/>
-                            <constraint firstItem="177-Sd-8Dv" firstAttribute="top" secondItem="4zh-h3-lim" secondAttribute="top" constant="15" id="nD1-LU-rmW"/>
-                            <constraint firstItem="55X-TI-zMt" firstAttribute="leading" secondItem="4TV-aR-hSp" secondAttribute="leading" constant="15" id="odJ-h3-jk0"/>
-                        </constraints>
-                        <viewLayoutGuide key="safeArea" id="4TV-aR-hSp"/>
-                    </view>
-                    <value key="contentSizeForViewInPopover" type="size" width="150" height="100"/>
-                    <nil key="simulatedTopBarMetrics"/>
-                    <nil key="simulatedBottomBarMetrics"/>
-                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-                    <size key="freeformSize" width="150" height="100"/>
-                    <connections>
-                        <outlet property="countLabel" destination="Gkq-nM-PV9" id="C3B-nn-lff"/>
-                        <outlet property="subtitleLabel" destination="55X-TI-zMt" id="RHD-SD-gJd"/>
-                        <outlet property="titleLabel" destination="177-Sd-8Dv" id="Ext-Vn-7GB"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="RRs-eQ-L2o" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="3873.913043478261" y="-166.07142857142856"/>
         </scene>
         <!--Items-->
         <scene sceneID="dyX-sR-0AW">

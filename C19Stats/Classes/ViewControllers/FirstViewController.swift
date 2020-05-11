@@ -51,6 +51,7 @@ class FirstViewController: UIViewController {
             return appDelegate.modelData
         }
         set {
+            appDelegate.modelData?.removeAll()
             appDelegate.modelData = newValue
         }
     }
@@ -59,7 +60,17 @@ class FirstViewController: UIViewController {
             return appDelegate.regionData
         }
         set {
+            appDelegate.regionData?.removeAll()
             appDelegate.regionData = newValue
+        }
+    }
+    
+    var isNewDataSample: Bool {
+        get {
+            return appDelegate.isNewDataSample
+        }
+        set {
+            appDelegate.isNewDataSample = newValue
         }
     }
 
@@ -88,6 +99,7 @@ class FirstViewController: UIViewController {
         messageLabel.text = ""
         namesDictionary?.removeAll()
         namesDictionary = nil
+        isNewDataSample = true
         tableView.reloadData()
         presentActionSheet()
     }
