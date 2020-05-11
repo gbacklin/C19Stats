@@ -54,7 +54,15 @@ class FirstViewController: UIViewController {
             appDelegate.modelData = newValue
         }
     }
-    
+    var regionData: [String: [JHUModel]]? {
+        get {
+            return appDelegate.regionData
+        }
+        set {
+            appDelegate.regionData = newValue
+        }
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -92,11 +100,13 @@ class FirstViewController: UIViewController {
     // MARK: - Navigation
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let controller: ModelDetailViewController = segue.destination as! ModelDetailViewController
-        let indexPath = tableView.indexPathForSelectedRow
-        let key = indexArray![indexPath!.section]
-        let modelArray: [JHUModel] = namesDictionary![String(key)]!
-        controller.model = modelArray[indexPath!.row]
+        if segue.identifier == "ShowModelData" {
+            let controller: ModelDetailViewController = segue.destination as! ModelDetailViewController
+            let indexPath = tableView.indexPathForSelectedRow
+            let key = indexArray![indexPath!.section]
+            let modelArray: [JHUModel] = namesDictionary![String(key)]!
+            controller.model = modelArray[indexPath!.row]
+        }
     }
     
     // MARK: - Utility
@@ -152,7 +162,7 @@ extension FirstViewController {
         let usConfirmedAction = UIAlertAction(title: "US Confirmed", style: .default) {[unowned self] (action) in
             self.activityIndicator.startAnimating()
             self.messageLabel.text = "Fetching results..."
-            JHUData.shared.saveResults(dataType: .confirmus) {[weak self] (path, filename, csv, models, error, message) in
+            JHUData.shared.saveResults(dataType: .confirmus) {[weak self] (path, filename, csv, models, regions, error, message) in
                 DispatchQueue.main.async {
                     if self!.namesDictionary == nil {
                         self!.namesDictionary = self!.initNamesDictionary(models: models!)
@@ -162,6 +172,7 @@ extension FirstViewController {
                     self!.outputFilename = filename
                     self!.outputCSVData = csv
                     self!.modelData = models
+                    self!.regionData = regions
                     self!.messageLabel.text = message
                     self!.composeBarButtonItem.isEnabled = true
                     self!.tableView.reloadData()
@@ -171,7 +182,7 @@ extension FirstViewController {
         let usDeathAction = UIAlertAction(title: "US Deaths", style: .default) {[unowned self] (action) in
             self.activityIndicator.startAnimating()
             self.messageLabel.text = "Fetching results..."
-            JHUData.shared.saveResults(dataType: .deathus) {[weak self] (path, filename, csv, models, error, message) in
+            JHUData.shared.saveResults(dataType: .deathus) {[weak self] (path, filename, csv, models, regions, error, message) in
                 DispatchQueue.main.async {
                     if self!.namesDictionary == nil {
                         self!.namesDictionary = self!.initNamesDictionary(models: models!)
@@ -181,6 +192,7 @@ extension FirstViewController {
                     self!.outputFilename = filename
                     self!.outputCSVData = csv
                     self!.modelData = models
+                    self!.regionData = regions
                     self!.messageLabel.text = message
                     self!.composeBarButtonItem.isEnabled = true
                     self!.tableView.reloadData()
@@ -190,7 +202,7 @@ extension FirstViewController {
         let globalConfirmedAction = UIAlertAction(title: "Global Confirmed", style: .default) {[unowned self] (action) in
             self.activityIndicator.startAnimating()
             self.messageLabel.text = "Fetching results..."
-            JHUData.shared.saveResults(dataType: .confirmglobal) {[weak self] (path, filename, csv, models, error, message) in
+            JHUData.shared.saveResults(dataType: .confirmglobal) {[weak self] (path, filename, csv, models, regions, error, message) in
                 DispatchQueue.main.async {
                     if self!.namesDictionary == nil {
                         self!.namesDictionary = self!.initNamesDictionary(models: models!)
@@ -200,6 +212,7 @@ extension FirstViewController {
                     self!.outputFilename = filename
                     self!.outputCSVData = csv
                     self!.modelData = models
+                    self!.regionData = regions
                     self!.messageLabel.text = message
                     self!.composeBarButtonItem.isEnabled = true
                     self!.tableView.reloadData()
@@ -209,7 +222,7 @@ extension FirstViewController {
         let globalDeathAction = UIAlertAction(title: "Global Deaths", style: .default) {[unowned self] (action) in
             self.activityIndicator.startAnimating()
             self.messageLabel.text = "Fetching results..."
-            JHUData.shared.saveResults(dataType: .deathglobal) {[weak self] (path, filename, csv, models, error, message) in
+            JHUData.shared.saveResults(dataType: .deathglobal) {[weak self] (path, filename, csv, models, regions, error, message) in
                 DispatchQueue.main.async {
                     if self!.namesDictionary == nil {
                         self!.namesDictionary = self!.initNamesDictionary(models: models!)
@@ -219,6 +232,7 @@ extension FirstViewController {
                     self!.outputFilename = filename
                     self!.outputCSVData = csv
                     self!.modelData = models
+                    self!.regionData = regions
                     self!.messageLabel.text = message
                     self!.composeBarButtonItem.isEnabled = true
                     self!.tableView.reloadData()
@@ -228,7 +242,7 @@ extension FirstViewController {
         let globalRecoveredAction = UIAlertAction(title: "Global Recovered", style: .default) {[unowned self] (action) in
             self.activityIndicator.startAnimating()
             self.messageLabel.text = "Fetching results..."
-            JHUData.shared.saveResults(dataType: .recoveredglobal) {[weak self] (path, filename, csv, models, error, message) in
+            JHUData.shared.saveResults(dataType: .recoveredglobal) {[weak self] (path, filename, csv, models, regions, error, message) in
                 DispatchQueue.main.async {
                     if self!.namesDictionary == nil {
                         self!.namesDictionary = self!.initNamesDictionary(models: models!)
@@ -238,6 +252,7 @@ extension FirstViewController {
                     self!.outputFilename = filename
                     self!.outputCSVData = csv
                     self!.modelData = models
+                    self!.regionData = regions
                     self!.messageLabel.text = message
                     self!.composeBarButtonItem.isEnabled = true
                     self!.tableView.reloadData()
@@ -308,7 +323,7 @@ extension FirstViewController: UITableViewDataSource {
         } else {
             cell.textLabel?.text = "\(object.countryRegion)"
         }
-        cell.detailTextLabel?.text = "\(object.latestTotal)"
+        cell.detailTextLabel?.text = "\(object.latestTotal) reported"
         return cell
     }
     

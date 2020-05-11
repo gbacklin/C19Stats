@@ -26,7 +26,7 @@ class JHUData: NSObject {
     var lastColumn = 0
     var reportingDate = ""
 
-    func fetchData(url: String, type: DataType, completion: @escaping (_ results: Any?,_ csv: String?,_ models: [JHUModel]?, _ error: NSError?) -> Void) {
+    func fetchData(url: String, type: DataType, completion: @escaping (_ results: Any?,_ csv: String?,_ models: [JHUModel]?,_ regions: [String: [JHUModel]]?, _ error: NSError?) -> Void) {
         // Fetch data...
         headerArray.removeAll()
         lastColumn = 0
@@ -34,7 +34,7 @@ class JHUData: NSObject {
         Network.shared.getCSV(url: url) { [weak self] (results, error) in
             if error != nil {
                 DispatchQueue.main.async {
-                    completion(nil, nil, nil, error)
+                    completion(nil, nil, nil, nil, error)
                 }
             } else {
                 if let rawData: String = results as? String {
@@ -44,6 +44,12 @@ class JHUData: NSObject {
                         parsedData = rawData.split{$0 == "\n"}.map(String.init)
                     }
                     let modelData: [JHUModel]? = self!.parseArray(csvArray: parsedData!, type: type)
+                    
+                    self!.headerArray.removeAll()
+                    self!.lastColumn = 0
+                    self!.reportingDate = ""
+
+                    let regionData: [String: [JHUModel]]? = self!.parseRegionArray(csvArray: parsedData!, type: type)
 
                     //let parsedData = rawData.split(separator: "\n")
                     var dataArray: [String] = [String]()
@@ -51,12 +57,12 @@ class JHUData: NSObject {
                         dataArray.append(data)
                     }
                     DispatchQueue.main.async {
-                        completion(dataArray, rawData, modelData, nil)
+                        completion(dataArray, rawData, modelData, regionData, nil)
                     }
                 } else {
                     let error: NSError = self!.createError(domain: NSURLErrorDomain, code: -1955, text: "The results from the query were nil") as NSError
                     DispatchQueue.main.async {
-                        completion(nil, nil, nil, error)
+                        completion(nil, nil, nil, nil, error)
                     }
                 }
             }
@@ -172,6 +178,40 @@ class JHUData: NSObject {
         return result
     }
 
+    func parseRegionArray(csvArray: [String], type: DataType) -> [String: [JHUModel]]? {
+        var result: [String: [JHUModel]]?
+        for csv in csvArray {
+            if let rec = parseRecord(csv: csv, type: type, delim: ",") {
+                if result == nil {
+                    result = [String: [JHUModel]]()
+                }
+                switch type {
+                case .confirmus, .deathus:
+                    let key = rec.provinceState
+                    if var regions = result![key] {
+                        regions.append(rec)
+                        result![key] = regions
+                    } else {
+                        var regions: [JHUModel] = [JHUModel]()
+                        regions.append(rec)
+                        result![key] = regions
+                    }
+                case .confirmglobal, .deathglobal, .recoveredglobal:
+                    let key = rec.countryRegion
+                    if var regions = result![key] {
+                        regions.append(rec)
+                        result![key] = regions
+                    } else {
+                        var regions: [JHUModel] = [JHUModel]()
+                        regions.append(rec)
+                        result![key] = regions
+                    }
+                }
+            }
+        }
+        return result
+    }
+
     func convertDate(dateString: String) -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale(identifier: "en_US_POSIX") // set locale to reliable US_POSIX
@@ -194,7 +234,7 @@ class JHUData: NSObject {
         return NSError(domain: domain, code: code, userInfo: userInfo)
     }
 
-    func fetch(type: DataType, completion: @escaping (_ results: [String]?, _ csv: String?, _ models: [JHUModel]?, _ error: NSError?) -> Void) {
+    func fetch(type: DataType, completion: @escaping (_ results: [String]?, _ csv: String?, _ models: [JHUModel]?, _ regions: [String: [JHUModel]]?, _ error: NSError?) -> Void) {
         let confirmUS = "time_series_covid19_confirmed_US.csv"
         let deathUS = "time_series_covid19_deaths_US.csv"
 
@@ -204,55 +244,51 @@ class JHUData: NSObject {
 
         switch type {
         case .confirmglobal:
-            fetchData(url: "\(JHU_URL)\(confirmGlobal)", type: type) { (data, csv, dataModels, error) in
+            fetchData(url: "\(JHU_URL)\(confirmGlobal)", type: type) { (data, csv, dataModels, regionModels, error) in
                 if error != nil {
-                    completion(nil, nil, nil, error)
+                    completion(nil, nil, nil, nil, error)
                 } else {
-                    completion(data as? [String], csv, dataModels, error)
+                    completion(data as? [String], csv, dataModels, regionModels, error)
                 }
             }
-
         case .deathglobal:
-            fetchData(url: "\(JHU_URL)\(deathGlobal)", type: type) { (data, csv, dataModels, error) in
+            fetchData(url: "\(JHU_URL)\(deathGlobal)", type: type) { (data, csv, dataModels, regionModels, error) in
                 if error != nil {
-                    completion(nil, nil, nil, error)
+                    completion(nil, nil, nil, nil, error)
                 } else {
-                    completion(data as? [String], csv, dataModels, error)
+                    completion(data as? [String], csv, dataModels, regionModels, error)
                 }
             }
-
         case .recoveredglobal:
-            fetchData(url: "\(JHU_URL)\(recoveredGlobal)", type: type) { (data, csv, dataModels, error) in
+            fetchData(url: "\(JHU_URL)\(recoveredGlobal)", type: type) { (data, csv, dataModels, regionModels, error) in
                 if error != nil {
-                    completion(nil, nil, nil, error)
+                    completion(nil, nil, nil, nil, error)
                 } else {
-                    completion(data as? [String], csv, dataModels, error)
+                    completion(data as? [String], csv, dataModels, regionModels, error)
                 }
             }
-
         case .confirmus:
-            fetchData(url: "\(JHU_URL)\(confirmUS)", type: type) { (data, csv, dataModels, error) in
+            fetchData(url: "\(JHU_URL)\(confirmUS)", type: type) { (data, csv, dataModels, regionModels, error) in
                 if error != nil {
-                    completion(nil, nil,  nil, error)
+                    completion(nil, nil, nil, nil, error)
                 } else {
-                    completion(data as? [String], csv, dataModels, error)
+                    completion(data as? [String], csv, dataModels, regionModels, error)
                 }
             }
-
         case .deathus:
-            fetchData(url: "\(JHU_URL)\(deathUS)", type: type) { (data, csv, dataModels, error) in
+            fetchData(url: "\(JHU_URL)\(deathUS)", type: type) { (data, csv, dataModels, regionModels, error) in
                 if error != nil {
-                    completion(nil, nil,  nil, error)
+                    completion(nil, nil, nil, nil, error)
                 } else {
-                    completion(data as? [String], csv, dataModels, error)
+                    completion(data as? [String], csv, dataModels, regionModels, error)
                 }
             }
         }
     }
     
-    func saveResults(dataType: DataType, completion: @escaping (_ path: String, _ filename: String, _ csv: String?, _ models: [JHUModel]?, _ error: NSError?, _ message: String?) -> Void) {
+    func saveResults(dataType: DataType, completion: @escaping (_ path: String, _ filename: String, _ csv: String?, _ models: [JHUModel]?, _ regions: [String: [JHUModel]]?, _ error: NSError?, _ message: String?) -> Void) {
         selectedDataType = dataType
-        JHUData.shared.fetch(type: dataType) { (results, csv, models, error) in
+        JHUData.shared.fetch(type: dataType) { (results, csv, models, regions, error) in
             let documents: NSString = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
             var filename: String = ""
             
@@ -275,7 +311,7 @@ class JHUData: NSObject {
             //(confirm as NSArray).write(toFile: self.outputFilename, atomically: true)
             //self.saveFile(path: self.outputFilename, data: csv!)
             let message = "There were \(results!.count) records retrieved."
-            completion(documents.appendingPathComponent(filename), filename, csv, models, error, message)
+            completion(documents.appendingPathComponent(filename), filename, csv, models, regions, error, message)
         }
     }
     

@@ -16,6 +16,9 @@
 		4E17160D2465E4AB00C29763 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E1716062465E4AB00C29763 /* Network.swift */; };
 		4E17160E2465E4AB00C29763 /* JHUData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E1716072465E4AB00C29763 /* JHUData.swift */; };
 		4E1716102465E4AB00C29763 /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E17160A2465E4AB00C29763 /* FirstViewController.swift */; };
+		4E716DCD246886A200A9280E /* RegionTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E716DCC246886A200A9280E /* RegionTableViewController.swift */; };
+		4E716DD02468AC8B00A9280E /* CustomAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E716DCF2468AC8B00A9280E /* CustomAnnotation.swift */; };
+		4E716DD22468AD2D00A9280E /* CustomAnnotationCalloutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E716DD12468AD2D00A9280E /* CustomAnnotationCalloutViewController.swift */; };
 		4ED1109B2465FA600067A43A /* ModelDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ED1109A2465FA600067A43A /* ModelDetailViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -31,6 +34,9 @@
 		4E1716062465E4AB00C29763 /* Network.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		4E1716072465E4AB00C29763 /* JHUData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JHUData.swift; sourceTree = "<group>"; };
 		4E17160A2465E4AB00C29763 /* FirstViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FirstViewController.swift; sourceTree = "<group>"; };
+		4E716DCC246886A200A9280E /* RegionTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegionTableViewController.swift; sourceTree = "<group>"; };
+		4E716DCF2468AC8B00A9280E /* CustomAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAnnotation.swift; sourceTree = "<group>"; };
+		4E716DD12468AD2D00A9280E /* CustomAnnotationCalloutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomAnnotationCalloutViewController.swift; sourceTree = "<group>"; };
 		4ED1109A2465FA600067A43A /* ModelDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelDetailViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -78,6 +84,7 @@
 		4E1716022465E4AB00C29763 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				4E716DCE2468AC5A00A9280E /* MapKitAnnotations */,
 				4E1716032465E4AB00C29763 /* Models */,
 				4E1716052465E4AB00C29763 /* Utilities */,
 				4E1716082465E4AB00C29763 /* ViewControllers */,
@@ -107,8 +114,18 @@
 			children = (
 				4ED1109A2465FA600067A43A /* ModelDetailViewController.swift */,
 				4E17160A2465E4AB00C29763 /* FirstViewController.swift */,
+				4E716DCC246886A200A9280E /* RegionTableViewController.swift */,
 			);
 			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		4E716DCE2468AC5A00A9280E /* MapKitAnnotations */ = {
+			isa = PBXGroup;
+			children = (
+				4E716DCF2468AC8B00A9280E /* CustomAnnotation.swift */,
+				4E716DD12468AD2D00A9280E /* CustomAnnotationCalloutViewController.swift */,
+			);
+			path = MapKitAnnotations;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -183,11 +200,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				4E1716102465E4AB00C29763 /* FirstViewController.swift in Sources */,
+				4E716DD22468AD2D00A9280E /* CustomAnnotationCalloutViewController.swift in Sources */,
 				4E17160E2465E4AB00C29763 /* JHUData.swift in Sources */,
 				4E17160D2465E4AB00C29763 /* Network.swift in Sources */,
 				4ED1109B2465FA600067A43A /* ModelDetailViewController.swift in Sources */,
 				4E17160C2465E4AB00C29763 /* JHUModel.swift in Sources */,
+				4E716DCD246886A200A9280E /* RegionTableViewController.swift in Sources */,
 				4E1715ED2465E45700C29763 /* AppDelegate.swift in Sources */,
+				4E716DD02468AC8B00A9280E /* CustomAnnotation.swift in Sources */,
 				4E1715EF2465E45700C29763 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
