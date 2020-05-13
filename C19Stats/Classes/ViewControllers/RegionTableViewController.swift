@@ -10,6 +10,7 @@ import UIKit
 
 class RegionTableViewController: UITableViewController {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var sumLatestTotal = -1
 
     var regionData: [String: [JHUModel]]? {
         get {
@@ -52,6 +53,7 @@ class RegionTableViewController: UITableViewController {
     // MARK: - Table view data source
     
     override func numberOfSections(in tableView: UITableView) -> Int {
+        sumLatestTotal = -1
         return 1
     }
 
@@ -71,12 +73,23 @@ class RegionTableViewController: UITableViewController {
         let regionKey = key
         let regionArray = regionData![key]
         
+        if sumLatestTotal == -1 {
+            sumLatestTotal = getSumLatestTotal(regionArray!)
+        }
         cell.textLabel?.text = regionKey
-        cell.detailTextLabel?.text = "\(regionArray!.count) regions"
-
+        cell.detailTextLabel?.text = "\(sumLatestTotal) in \(regionArray!.count) regions"
+        sumLatestTotal = -1
+        
         return cell
     }
 
+    func getSumLatestTotal(_ array: [JHUModel]) -> Int {
+        var subTotal = 0
+        for rec in array {
+            subTotal += Int(rec.latestTotal)!
+        }
+        return subTotal
+    }
 
     // MARK: - Navigation
 
